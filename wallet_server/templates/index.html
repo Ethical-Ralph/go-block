@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>My Wallet UI</title>
+  </head>
+  <body style="padding: 20px">
+    <h1>My Wallet</h1>
+    <br />
+    <h3 id="wallet_amount">$<b>0</b></h3>
+
+    <p>Public Key</p>
+    <input id="public_key" type="text" name="public key" size="80" />
+    <br />
+
+    <p>Private Key</p>
+    <input id="private_key" type="text" name="private key" size="80" />
+    <br />
+
+    <p>Blockchain Address</p>
+    <input
+      id="blockchain_address"
+      type="text"
+      name="blockchain address"
+      size="50"
+    />
+    <br />
+
+    <h1>Send Money</h1>
+    <p>Address</p>
+    <input id="address" type="text" name="address" size="80" />
+    <br />
+
+    <p>Amount</p>
+    <input id="amount" type="number" name="amount" size="80" />
+    <br />
+    <br />
+
+    <button id="send_money_button">Send</button>
+
+    <script>
+      const createWallet = async () => {
+        const wallet = await fetch("/wallet", {
+          method: "POST",
+        }).then((r) => r.json());
+
+        document.getElementById("public_key").value = wallet.publicKey;
+        document.getElementById("private_key").value = wallet.privateKey;
+        document.getElementById("blockchain_address").value =
+          wallet.blockchainAddress;
+      };
+
+      document
+        .getElementById("send_money_button")
+        .addEventListener("click", async () => {
+          const confirmation = confirm("Are you sure?");
+          if (!confirmation) {
+            alert("Cancelled");
+            return;
+          }
+
+          const sender_public_key = document.getElementById("public_key").value;
+          const sender_private_key =
+            document.getElementById("private_key").value;
+          const sender_blockchain_address =
+            document.getElementById("blockchain_address").value;
+          const recipient_blockchain_address =
+            document.getElementById("address").value;
+          const amount = document.getElementById("amount").value;
+
+          const payload = {
+            sender_public_key,
+            sender_private_key,
+            sender_blockchain_address,
+            recipient_blockchain_address,
+            amount,
+          };
+
+          const response = await fetch("/transaction", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+          });
+
+          const data = await response.json();
+
+          console.log(data);
+          alert(data.message);
+        });
+
+      createWallet();
+    </script>
+  </body>
+</html>
