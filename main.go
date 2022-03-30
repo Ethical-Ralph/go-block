@@ -11,8 +11,7 @@ func init() {
 	log.SetPrefix("BlockChain: ")
 }
 
-
-func main(){
+func main() {
 	port := flag.Uint("port", 8080, "port to listen on")
 	flag.Parse()
 
