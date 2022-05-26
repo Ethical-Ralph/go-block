@@ -12,18 +12,16 @@ import (
 type Block struct {
 	Timestamp    int64
 	Nonce        int
-	PreviousHash string
+	PreviousHash [32]byte
 	Transactions []*transaction.Transaction
-	Hash         string
 }
 
-func NewBlock(nonce int, previousHash string, transactions []*transaction.Transaction) *Block {
+func NewBlock(nonce int, previousHash [32]byte, transactions []*transaction.Transaction) *Block {
 	b := new(Block)
 	b.Nonce = nonce
 	b.PreviousHash = previousHash
 	b.Timestamp = time.Now().UnixNano()
 	b.Transactions = transactions
-	b.Hash = b.CalculateHash()
 	return b
 }
 
@@ -31,15 +29,14 @@ func (b *Block) Print() {
 	fmt.Printf("timestamp           %d\n", b.Timestamp)
 	fmt.Printf("nonce               %d\n", b.Nonce)
 	fmt.Printf("previousHash        %x\n", b.PreviousHash)
-	fmt.Printf("hash                %x\n", b.Hash)
 	for _, t := range b.Transactions {
 		t.Print()
 	}
 }
 
-func (b *Block) CalculateHash() string {
+func (b *Block) CalculateHash() [32]byte {
 	jsonString, _ := b.MarshalJSON()
-	return fmt.Sprintf("%x", sha256.Sum256([]byte(jsonString)))
+	return sha256.Sum256([]byte(jsonString))
 }
 
 func (b *Block) MarshalJSON() ([]byte, error) {

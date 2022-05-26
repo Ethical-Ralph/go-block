@@ -7,6 +7,7 @@
     <h1>My Wallet</h1>
     <br />
     <h3 id="wallet_amount">$<b>0</b></h3>
+    <button id="reload_wallet">Reload Wallet</button>
 
     <p>Public Key</p>
     <input id="public_key" type="text" name="public key" size="80" />
@@ -88,6 +89,27 @@
           console.log(data);
           alert(data.message);
         });
+
+      const reloadAmount = async () => {
+        const sender_blockchain_address =
+          document.getElementById("blockchain_address").value;
+
+        const response = await fetch(
+          `/wallet/amount?blockchain_address=${sender_blockchain_address}`
+        );
+        const data = await response.json();
+
+        document.getElementById("wallet_amount").innerHTML =
+          "$<b>" + data.amount + "</b>";
+      };
+
+      document.getElementById("reload_wallet").addEventListener("click", () => {
+        reloadAmount();
+      });
+
+      setInterval(() => {
+        reloadAmount();
+      }, 3000);
 
       createWallet();
     </script>
